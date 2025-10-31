@@ -2,7 +2,6 @@ import csv
 from datetime import datetime
 import os
 
-# التأكد أن مسار التنفيذ هو نفس مسار الملف
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 # ---------- Classes ----------
@@ -142,20 +141,17 @@ def load_csv(filename):
 
 
 def load_data():
-    # تحميل البيانات من مجلد data/
     members_data = load_csv("data/members_cleaned_extended.csv")
     skills_data = load_csv("data/skills.csv")
     teams_data = load_csv("data/teams.csv")
     subs_data = load_csv("data/subscriptions.csv")
     events_data = load_csv("data/event.csv")
 
-    # تنظيف الأعمدة (إزالة المسافات)
     for sheet in [members_data, skills_data, teams_data, subs_data, events_data]:
         for row in sheet:
             for key in list(row.keys()):
                 row[key.strip()] = row.pop(key)
 
-    # إنشاء الفرق أولاً
     teams = {}
     for t in teams_data:
         team_name = t.get("team_name", "").strip()
@@ -167,7 +163,6 @@ def load_data():
                 team_type=t.get("team_type", "Football"),
             )
 
-    # إنشاء الأعضاء
     members = {}
     for m in members_data:
         member = Member(
@@ -182,7 +177,6 @@ def load_data():
         )
         members[int(m["member_id"])] = member
 
-    # **الجزء المهم: ربط الأعضاء بالفرق باستخدام teams.csv**
     member_team_mapping = {}
     for t in teams_data:
         member_id = t.get("member_id")
@@ -190,7 +184,6 @@ def load_data():
         if member_id and team_name:
             member_team_mapping[int(member_id)] = team_name
 
-    # الآن ربط كل عضو بفريقه الصحيح
     for member_id, member in members.items():
         if member_id in member_team_mapping:
             team_name = member_team_mapping[member_id]
@@ -198,26 +191,21 @@ def load_data():
                 teams[team_name].add_member(member)
                 member.team_name = team_name  # تحديث اسم الفريق للعضو
             else:
-                print(f"تحذير: فريق '{team_name}' غير موجود للعضو {member.full_name}")
+                print(f"Unknown:  '{team_name}' unknown   {member.full_name}")
         else:
-            print(f"تحذير: لا يوجد فريق للعضو {member.full_name} (ID: {member_id})")
+            print(f"unknown {member.full_name} (ID: {member_id})")
 
-    # إنشاء المهارات
     skills = [Skill(s.get("skill_name", "Unknown")) for s in skills_data]
 
-    # توزيع المهارات على الأعضاء
     members_list = list(members.values())
     for i, s in enumerate(skills):
         member = members_list[i % len(members_list)]
         member.add_skill(s)
 
-    # إنشاء الاشتراكات
     subscriptions = [Subscription(**s) for s in subs_data]
 
-    # إنشاء الأحداث
     events = [Event(**e) for e in events_data]
 
-    # تسجيل كل الأعضاء في الحدث الأول
     if events:
         for m in members.values():
             events[0].register(m.full_name)
@@ -235,17 +223,13 @@ if __name__ == "__main__":
         f"Members: {len(members)} | Teams: {len(teams)} | Events: {len(events)} | Subscriptions: {len(subs)}"
     )
 
-    # عرض كل الفرق
     for t in teams.values():
         t.show_team()
 
-    # عرض أول عضو
     list(members.values())[0].display_profile()
 
-    # عرض أول حدث
     if events:
         events[0].show_event()
 
-    # حساب الدخل
     total_income = sum(s.amount for s in subs if s.status.lower() == "paid")
     print(f"\n💰 Total Income: {total_income:.2f} DA")
