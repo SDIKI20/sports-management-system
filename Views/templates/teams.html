@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Liste des Équipes</h2>
+
+<form method="POST" action="{{ url_for('team.add_team') }}">
+    <input type="text" name="name" placeholder="Nom de l'équipe" required>
+    <input type="text" name="coach_name" placeholder="Nom du coach" required>
+    <input type="text" name="type" placeholder="Type de sport" required>
+    <button type="submit">Ajouter</button>
+</form>
+
+<table border="1" cellpadding="5">
+<tr><th>Nom</th><th>Coach</th><th>Type</th><th>Action</th></tr>
+{% for t in teams %}
+<tr>
+    <td>{{ t.name }}</td>
+    <td>{{ t.coach_name }}</td>
+    <td>{{ t.type }}</td>
+    <td><a href="{{ url_for('team.delete_team', id=t.id) }}">❌ Supprimer</a></td>
+</tr>
+{% endfor %}
+</table>
+{% endblock %}

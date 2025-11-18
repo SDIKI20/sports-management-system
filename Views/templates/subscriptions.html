@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Liste des Abonnements</h2>
+
+<form method="POST" action="{{ url_for('subscription.add_subscription') }}">
+    <select name="member_id" required>
+        <option value="">-- Choisir un membre --</option>
+        {% for m in members %}
+        <option value="{{ m.id }}">{{ m.full_name }}</option>
+        {% endfor %}
+    </select>
+    <input type="number" step="0.01" name="amount" placeholder="Montant" required>
+    <input type="date" name="date" required>
+    <input type="text" name="status" placeholder="Statut" required>
+    <button type="submit">Ajouter</button>
+</form>
+
+<table border="1" cellpadding="5">
+<tr><th>Membre</th><th>Montant</th><th>Date</th><th>Statut</th><th>Action</th></tr>
+{% for s in subscriptions %}
+<tr>
+    <td>{{ s.member.full_name }}</td>
+    <td>{{ s.amount }}</td>
+    <td>{{ s.date }}</td>
+    <td>{{ s.status }}</td>
+    <td><a href="{{ url_for('subscription.delete_subscription', id=s.id) }}">❌ Supprimer</a></td>
+</tr>
+{% endfor %}
+</table>
+{% endblock %}

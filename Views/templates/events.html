@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Liste des Événements</h2>
+
+<form method="POST" action="{{ url_for('event.add_event') }}">
+    <input type="text" name="name" placeholder="Nom de l'événement" required>
+    <input type="date" name="date" required>
+    <input type="text" name="location" placeholder="Lieu" required>
+    <input type="text" name="organizer" placeholder="Organisateur" required>
+    <button type="submit">Ajouter</button>
+</form>
+
+<table border="1" cellpadding="5">
+<tr><th>Nom</th><th>Date</th><th>Lieu</th><th>Organisateur</th><th>Action</th></tr>
+{% for e in events %}
+<tr>
+    <td>{{ e.name }}</td>
+    <td>{{ e.date }}</td>
+    <td>{{ e.location }}</td>
+    <td>{{ e.organizer }}</td>
+    <td><a href="{{ url_for('event.delete_event', id=e.id) }}">❌ Supprimer</a></td>
+</tr>
+{% endfor %}
+</table>
+{% endblock %}

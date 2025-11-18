@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Liste des Membres</h2>
+
+<form method="POST" action="{{ url_for('member.add_member') }}">
+    <input type="text" name="full_name" placeholder="Nom complet" required>
+    <input type="email" name="email" placeholder="Email" required>
+    <input type="text" name="phone" placeholder="Téléphone">
+    <button type="submit">Ajouter</button>
+</form>
+
+<table>
+<tr><th>Nom</th><th>Email</th><th>Téléphone</th></tr>
+{% for m in members %}
+<tr><td>{{ m.full_name }}</td><td>{{ m.email }}</td><td>{{ m.phone }}</td></tr>
+{% endfor %}
+</table>
+{% endblock %}

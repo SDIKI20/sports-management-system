@@ -1,19 +1,13 @@
-class Member:
-    """Représente un membre du club sportif."""
+from . import db
 
-    def __init__(self, member_id, full_name, email, phone, address, join_date, team_name, subscription_status):
-        self.id = int(member_id)
-        self.full_name = full_name
-        self.email = email
-        self.phone = phone
-        self.address = address
-        self.join_date = join_date
-        self.team_name = team_name
-        self.subscription_status = subscription_status
-        self.skills = []
+class Member(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    full_name = db.Column(db.String(100))
+    email = db.Column(db.String(100), unique=True)
+    phone = db.Column(db.String(20))
+    address = db.Column(db.String(200))
+    join_date = db.Column(db.Date)
+    team_id = db.Column(db.Integer, db.ForeignKey('team.id'))
+    subscription_status = db.Column(db.String(20))
 
-    def add_skill(self, skill):
-        self.skills.append(skill)
-
-    def __str__(self):
-        return f"{self.full_name} ({self.team_name})"
+    team = db.relationship("Team", back_populates="members")
